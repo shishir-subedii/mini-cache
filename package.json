@@ -1,32 +1,47 @@
 {
   "name": "@shishirsubedi/mini-cache",
-  "version": "1.0.0",
-  "description": "A lightweight, zero-dependency in-memory cache with TTL support",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    "import": "./dist/index.js",
-    "require": "./dist/index.js"
-  },
-  "scripts": {
-    "build": "rimraf dist && tsc",
-    "test": "echo \"No tests yet\"",
-    "prepublishOnly": "npm run build"
-  },
+  "version": "1.0.4",
+  "description": "A lightweight, zero-dependency in-memory cache with TTL support.",
   "keywords": [
     "cache",
     "ttl",
-    "in-memory-cache",
+    "in-memory",
+    "memory-cache",
     "tiny-cache",
     "javascript",
     "typescript",
-    "@shishirsubedi/mini-cache"
+    "singleton",
+    "utility",
+    "ttl-cache"
   ],
-  "author": "Shishir Subedi",
-  "license": "MIT",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    "require": "./dist/cjs/index.js",
+    "import": "./dist/esm/index.js",
+    "types": "./dist/types/index.d.ts"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "ReadMe.md"
+  ],
+  "scripts": {
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:esm": "tsc --project tsconfig.esm.json",
+    "build": "rimraf dist && npm run build:cjs && npm run build:esm",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/shishir-subedii/mini-cache"
+    "url": "git+https://github.com/shishir-subedii/mini-cache.git"
+  },
+  "author": "Shishir Subedi",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
