@@ -13,62 +13,61 @@ npm install @shishirsubedi/mini-cache
 ## Usage
 
 ```ts
-import * as cache from '@shishirsubedi/mini-cache';
 
-// Optional: Configure default TTL and background cleanup interval
+import * as cache from '@shishirsubedi/mini-cache'; 
+// or const cache = require('@shishirsubedi/mini-cache')
+
+// 1. Configure the cache (optional)
 cache.configure({
-  defaultTTL: 3000,       // Default TTL for all .set() calls in ms (3 seconds)
-  checkPeriod: 5000       // Auto-cleanup interval in ms
+  defaultTTL: 3000,    // Default TTL of 3 seconds for every .set() (if not overridden)
+  checkPeriod: 5000    // Automatically removes expired keys every 5 seconds
 });
 
-// set(key, value, ttl?)
-cache.set('user:123', { name: 'Alice' }, 5000); // expires in 5s
-cache.set('user:456', { name: 'Bob' });         // expires in defaultTTL (3s)
+// 2. Store data in the cache
+cache.set('user:1', { name: 'Alice' }, 5000); // Expires in 5 seconds
+cache.set('user:2', { name: 'Bob' });         // Uses defaultTTL (3 seconds)
 
-// get(key): T | undefined
-const user = cache.get<{ name: string }>('user:123');
-console.log(user?.name); // "Alice"
+// 3. Retrieve data
+const user1 = cache.get<{ name: string }>('user:1');
+console.log('User1:', user1?.name); // → Alice
 
-// del(key)
-cache.del('user:123'); // Deletes key if it exists
-
-// has(key): boolean
-if (cache.has('user:456')) {
-  console.log('User is cached!');
+// 4. Check existence
+if (cache.has('user:2')) {
+  console.log('User2 is cached.');
 }
 
-// expiresAt(key): number | undefined
-const ts = cache.expiresAt('user:123');
-console.log(ts); // e.g., 1721456789453 (UNIX ms timestamp)
+// 5. See when a key will expire
+const expiry = cache.expiresAt('user:1');
+if (expiry) {
+  console.log('User1 expires at:', new Date(expiry).toLocaleString()); //normally it returns the expiration timestamp (in ms) for a key.
+}
 
-// removeExpired()
-cache.removeExpired(); // Manually remove all expired items
+// 6. Manually remove expired items
+setTimeout(() => {
+  cache.removeExpired();
+  console.log('Expired keys cleaned up.');
+}, 6000);
 
-// flush()
-cache.flush(); // Clears the entire cache
+// 7. Delete a specific key
+cache.del('user:2');
 
-// stop()
-cache.stop(); // Stops the automatic expiration check interval
+// 8. Flush the entire cache
+cache.flush();
 
-// size(): number
-console.log(`Cache size: ${cache.size()}`);
-
-// configure(options)
-cache.configure({
-  defaultTTL: 10000,  // 10 seconds
-  checkPeriod: 3000   // cleanup expired entries every 3s
+// 9. Stop the internal cleanup timer (optional cleanup)
+process.on('SIGINT', () => {
+  cache.stop();
+  console.log('Cache cleanup stopped. Exiting...');
+  process.exit();
 });
 
-//Example:
-import * as cache from '@shishirsubedi/mini-cache';
-
-cache.configure({ defaultTTL: 2000, checkPeriod: 5000 });
-
-cache.set('token', 'abc123');
-console.log(cache.get('token'));        // 'abc123'
-
-setTimeout(() => {
-  console.log(cache.get('token'));     // undefined (expired)
-}, 2500);
+// 10. Print cache size
+console.log(`Cache size: ${cache.size()}`);
 
 ```
+
+---
+
+This library is conceptually inspired by node-cache, but with a lighter footprint, singleton access, and full TypeScript typings.
+
+---
